@@ -1,6 +1,5 @@
 package org.kie.services.client.api.builder;
 
-import org.kie.internal.deployment.DeploymentUnit.RuntimeStrategy;
 import org.kie.services.client.api.RemoteRuntimeEngineFactory;
 import org.kie.services.client.api.builder.exception.InsufficientInfoToBuildException;
 
