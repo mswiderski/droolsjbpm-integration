@@ -15,7 +15,10 @@
 
 package org.kie.server.services.impl.controller;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.Properties;
 import java.util.Set;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -29,6 +32,7 @@ import org.kie.server.api.marshalling.MarshallingException;
 import org.kie.server.api.marshalling.MarshallingFormat;
 import org.kie.server.api.model.KieServerConfig;
 import org.kie.server.api.model.KieServerInfo;
+import org.kie.server.api.security.SystemUserPasswordProvider;
 import org.kie.server.controller.api.KieServerController;
 import org.kie.server.controller.api.model.KieServerSetup;
 import org.kie.server.services.api.KieControllerNotConnectedException;
@@ -44,8 +48,23 @@ public class DefaultRestControllerImpl implements KieServerController {
 
     private final KieServerRegistry context;
 
+    private SystemUserPasswordProvider passwordProvider;
+
     public DefaultRestControllerImpl(KieServerRegistry context) {
         this.context = context;
+
+        Properties securityProperties = new Properties();
+        try {
+            securityProperties.load(new FileInputStream(System.getProperty("org.kie.server.security.properties")));
+        } catch (IOException e) {
+            logger.info("Unable to load KIE Server security properties, does it exist at {}?", System.getProperty("org.kie.server.security.properties"));
+        }
+        char[] password = null;
+        if (securityProperties.getProperty("keystore.password") != null) {
+            password = securityProperties.getProperty("keystore.password").toCharArray();
+        }
+
+        passwordProvider = new SystemUserPasswordProvider(securityProperties.getProperty("keystore.location"), password);
     }
 
     @SuppressWarnings("unchecked")
@@ -126,11 +145,11 @@ public class DefaultRestControllerImpl implements KieServerController {
 
                 if (controllerUrl != null && !controllerUrl.isEmpty()) {
                     String connectAndSyncUrl = controllerUrl + "/server/" + KieServerEnvironment.getServerId();
-
-                    String userName = config.getConfigItemValue(KieServerConstants.CFG_KIE_CONTROLLER_USER, "kieserver");
-                    String password = config.getConfigItemValue(KieServerConstants.CFG_KIE_CONTROLLER_PASSWORD, "kieserver1!");
-
                     try {
+                        String userName = config.getConfigItemValue(KieServerConstants.CFG_KIE_CONTROLLER_USER, "kieserver");
+                        String password = new String(passwordProvider.retrieveEntryPassword("kieserver"));
+
+
                         KieServerSetup kieServerSetup = makeHttpPutRequestAndCreateCustomResponse(connectAndSyncUrl, serialize(serverInfo), KieServerSetup.class, userName, password);
 
                         if (kieServerSetup != null) {
@@ -170,7 +189,7 @@ public class DefaultRestControllerImpl implements KieServerController {
                     connectAndSyncUrl = controllerUrl + "/server/" + KieServerEnvironment.getServerId()+"/?location="+ URLEncoder.encode(serverInfo.getLocation(), "UTF-8");
 
                     String userName = config.getConfigItemValue(KieServerConstants.CFG_KIE_CONTROLLER_USER, "kieserver");
-                    String password = config.getConfigItemValue(KieServerConstants.CFG_KIE_CONTROLLER_PASSWORD, "kieserver1!");
+                    String password = new String(passwordProvider.retrieveEntryPassword("kieserver"));
 
 
                     makeHttpDeleteRequestAndCreateCustomResponse(connectAndSyncUrl, null, userName, password);
