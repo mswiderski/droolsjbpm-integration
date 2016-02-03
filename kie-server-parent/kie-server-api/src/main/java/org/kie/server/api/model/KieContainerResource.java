@@ -15,7 +15,11 @@
 
 package org.kie.server.api.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -39,6 +43,9 @@ public class KieContainerResource {
 
     @XStreamAlias( "scanner" )
     private KieScannerResource scanner;
+
+    @XStreamImplicit
+    private List<KieServerConfigItem> configItems = new ArrayList<KieServerConfigItem>();
 
     public KieContainerResource() {
     }
@@ -105,6 +112,19 @@ public class KieContainerResource {
     
     public void setScanner(KieScannerResource scanner) {
         this.scanner = scanner;
+    }
+
+    @XmlElement(name="config-items")
+    public List<KieServerConfigItem> getConfigItems() {
+        return configItems;
+    }
+
+    public void setConfigItems(List<KieServerConfigItem> configItems) {
+        this.configItems = configItems;
+    }
+
+    public void addConfigItem(KieServerConfigItem configItem) {
+        this.configItems.add(configItem);
     }
 
     @Override
