@@ -1,0 +1,71 @@
+/*
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+*/
+
+package org.kie.server.controller.api.model.spec;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.kie.server.api.model.KieContainerStatus;
+import org.kie.server.api.model.ReleaseId;
+import org.kie.server.controller.api.model.spec.ContainerConfig;
+
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "container-spec-details")
+public class ContainerSpec extends ContainerSpecKey  {
+
+    @XmlElement(name = "release-id")
+    private ReleaseId releasedId;
+    @XmlElement(name = "configuration")
+    private Map<Capability, ContainerConfig> configs = new HashMap<Capability, ContainerConfig>();
+    @XmlElement(name = "status")
+    private KieContainerStatus status = KieContainerStatus.STOPPED;
+
+    public ReleaseId getReleasedId() {
+        return releasedId;
+    }
+
+    public Map<Capability, ContainerConfig> getConfigs() {
+        if (configs == null) {
+            configs = new HashMap<Capability, ContainerConfig>();
+        }
+        return configs;
+    }
+
+    public KieContainerStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(KieContainerStatus status) {
+        this.status = status;
+    }
+
+    public void setReleasedId(ReleaseId releasedId) {
+        this.releasedId = releasedId;
+    }
+
+    public void setConfigs(Map<Capability, ContainerConfig> configs) {
+        this.configs = configs;
+    }
+
+    public void addConfig(Capability capability, ContainerConfig config) {
+        this.configs.put(capability, config);
+    }
+}

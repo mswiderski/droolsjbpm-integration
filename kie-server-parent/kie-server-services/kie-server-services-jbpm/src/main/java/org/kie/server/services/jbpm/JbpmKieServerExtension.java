@@ -72,6 +72,7 @@ import org.kie.api.task.UserGroupCallback;
 import org.kie.internal.runtime.conf.DeploymentDescriptor;
 import org.kie.internal.runtime.conf.MergeMode;
 import org.kie.internal.runtime.conf.NamedObjectModel;
+import org.kie.internal.runtime.conf.RuntimeStrategy;
 import org.kie.server.api.KieServerConstants;
 import org.kie.server.api.model.KieServerConfig;
 import org.kie.server.services.api.KieContainerCommandService;
@@ -285,6 +286,22 @@ public class JbpmKieServerExtension implements KieServerExtension {
                 unit.setKbaseName(kbaseNames.iterator().next());
                 unit.setKsessionName(ksessionNames.iterator().next());
             }
+            // override defaults if config options are given
+            KieServerConfig config = context.getConfig();
+
+            String runtimeStrategy = config.getConfigItemValue("RuntimeStrategy");
+            if (runtimeStrategy != null && !runtimeStrategy.isEmpty()) {
+                unit.setStrategy(RuntimeStrategy.valueOf(runtimeStrategy));
+            }
+            String mergeMode = config.getConfigItemValue("MergeMode");
+            if (mergeMode != null && !mergeMode.isEmpty()) {
+                unit.setMergeMode(MergeMode.valueOf(mergeMode));
+            }
+            String ksession = config.getConfigItemValue("KSession");
+            unit.setKsessionName(ksession);
+            String kbase = config.getConfigItemValue("KBase");
+            unit.setKbaseName(kbase);
+
             // reuse kieContainer to avoid unneeded bootstrap
             unit.setKieContainer(kieContainer);
 
