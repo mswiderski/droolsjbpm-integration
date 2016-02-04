@@ -73,33 +73,13 @@ import org.kie.server.api.model.definition.QueryDefinition;
 import org.kie.server.api.model.definition.QueryDefinitionList;
 import org.kie.server.api.model.definition.QueryFilterSpec;
 import org.kie.server.api.model.definition.QueryParam;
-import org.kie.server.api.model.instance.ErrorInfoInstance;
-import org.kie.server.api.model.instance.ErrorInfoInstanceList;
-import org.kie.server.api.model.instance.JobRequestInstance;
-import org.kie.server.api.model.instance.NodeInstance;
-import org.kie.server.api.model.instance.NodeInstanceList;
-import org.kie.server.api.model.instance.ProcessInstance;
-import org.kie.server.api.model.instance.ProcessInstanceList;
-import org.kie.server.api.model.instance.RequestInfoInstance;
-import org.kie.server.api.model.instance.RequestInfoInstanceList;
-import org.kie.server.api.model.instance.TaskAttachment;
-import org.kie.server.api.model.instance.TaskAttachmentList;
-import org.kie.server.api.model.instance.TaskComment;
-import org.kie.server.api.model.instance.TaskCommentList;
-import org.kie.server.api.model.instance.TaskEventInstance;
-import org.kie.server.api.model.instance.TaskEventInstanceList;
-import org.kie.server.api.model.instance.TaskInstance;
-import org.kie.server.api.model.instance.TaskInstanceList;
-import org.kie.server.api.model.instance.TaskSummary;
-import org.kie.server.api.model.instance.TaskSummaryList;
-import org.kie.server.api.model.instance.VariableInstance;
-import org.kie.server.api.model.instance.VariableInstanceList;
-import org.kie.server.api.model.instance.WorkItemInstance;
-import org.kie.server.api.model.instance.WorkItemInstanceList;
+import org.kie.server.api.model.instance.*;
 import org.kie.server.api.model.type.JaxbByteArray;
 import org.kie.server.api.model.type.JaxbDate;
 import org.kie.server.api.model.type.JaxbList;
 import org.kie.server.api.model.type.JaxbMap;
+import org.optaplanner.core.api.domain.solution.Solution;
+import org.optaplanner.core.api.score.Score;
 
 public class JaxbMarshaller implements Marshaller {
     public static final Class<?>[] KIE_SERVER_JAXB_CLASSES;
@@ -194,13 +174,16 @@ public class JaxbMarshaller implements Marshaller {
                 QueryFilterSpec.class,
                 QueryParam.class,
 
-                ArrayList.class
+                ArrayList.class,
+
+                // optaplanner
+                SolverInstance.class
         };
     }
 
     private final JAXBContext jaxbContext;
 
-    private final ClassLoader classLoader;
+    private ClassLoader classLoader;
 
     public JaxbMarshaller(Set<Class<?>> classes, ClassLoader classLoader) {
         this.classLoader = classLoader;
@@ -261,5 +244,13 @@ public class JaxbMarshaller implements Marshaller {
         return jaxbContext.createUnmarshaller();
     }
 
+    @Override
+    public void setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+    }
 
+    @Override
+    public ClassLoader getClassLoader() {
+        return classLoader;
+    }
 }

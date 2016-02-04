@@ -66,7 +66,7 @@ public class JSONMarshaller implements Marshaller {
     private static boolean formatDate = Boolean.parseBoolean(System.getProperty("org.kie.server.json.format.date", "false"));
     private static String dateFormatStr = System.getProperty("org.kie.server.json.date_format", "yyyy-MM-dd'T'hh:mm:ss.SSSZ");
 
-    private final ClassLoader classLoader;
+    private ClassLoader classLoader;
     private final ObjectMapper objectMapper;
 
     private final ObjectMapper fallbackObjectMapper;
@@ -410,5 +410,15 @@ public class JSONMarshaller implements Marshaller {
 
             return VALID_JAVA_IDENTIFIER.matcher(classname).matches();
         }
+    }
+
+    @Override
+    public void setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+    }
+
+    @Override
+    public ClassLoader getClassLoader() {
+        return classLoader;
     }
 }
