@@ -17,10 +17,12 @@ package org.kie.server.controller.api.model.runtime;
 
 public interface ContainerKey{
 
-    String getServerTemplateId();
-
     String getContainerSpecId();
 
+    String getContainerName();
+
     String getUrl();
+
+    ServerInstanceKey getServiceInstanceKey();
 
 }

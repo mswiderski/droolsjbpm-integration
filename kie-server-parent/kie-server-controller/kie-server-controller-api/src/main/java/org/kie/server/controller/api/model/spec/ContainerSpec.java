@@ -21,6 +21,8 @@ import org.kie.server.api.model.ReleaseId;
 
 public interface ContainerSpec extends ContainerSpecKey {
 
+    String getId();
+
     ReleaseId getReleasedId();
 
     Map<Capability, ContainerConfig> getConfigs();

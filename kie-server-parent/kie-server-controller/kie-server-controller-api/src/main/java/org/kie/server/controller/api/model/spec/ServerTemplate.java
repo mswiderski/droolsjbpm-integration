@@ -18,25 +18,21 @@ package org.kie.server.controller.api.model.spec;
 import java.util.Collection;
 import java.util.Map;
 
+import org.kie.server.controller.api.model.runtime.ServerInstanceKey;
+
 public interface ServerTemplate extends ServerTemplateKey {
 
     Map<Capability, ServerConfig> getConfigs();
 
     Collection<ContainerSpec> getContainersSpec();
 
-    Collection<String> getServerInstances();
+    boolean hasContainerSpec( final String containerSpecId );
 
-    boolean hasContainerSpec(final String containerSpecId);
+    ContainerSpec getContainerSpec( final String containerSpecId );
 
-    ContainerSpec getContainerSpec(final String containerSpecId);
+    void addContainerSpec( final ContainerSpec containerSpec );
 
-    void addContainerSpec(final ContainerSpec containerSpec);
+    void deleteContainerSpec( String containerSpecId );
 
-    void deleteContainerSpec(final String containerSpecId);
-
-    boolean hasServerInstance(final String location);
-
-    void addServerInstance(final String location);
-
-    void deleteServerInstance(final String location);
+    Collection<ServerInstanceKey> getServerIntanceKeys();
 }
