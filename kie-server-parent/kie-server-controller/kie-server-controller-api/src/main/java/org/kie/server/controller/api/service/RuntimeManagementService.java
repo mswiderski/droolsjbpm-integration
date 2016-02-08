@@ -17,17 +17,22 @@ package org.kie.server.controller.api.service;
 
 import java.util.Collection;
 
+import org.jboss.errai.bus.server.annotations.Remote;
+import org.kie.server.controller.api.model.ContainerSpecData;
+import org.kie.server.controller.api.model.runtime.Container;
 import org.kie.server.controller.api.model.runtime.ServerInstance;
-import org.kie.server.controller.api.model.runtime.ServerInstanceKey;
+import org.kie.server.controller.api.model.spec.ContainerSpecKey;
+import org.kie.server.controller.api.model.spec.ServerTemplateKey;
 
+@Remote
 public interface RuntimeManagementService {
 
-    Collection<ServerInstanceKey> getServerInstanceNames(final String serverTemplateId);
+    Collection<ServerTemplateKey> getServerInstanceKey( final String serverTemplateId );
 
-    Collection<ServerInstance> getServerInstances(final String serverTemplateId);
+    Collection<ServerInstance> getServerInstances( final String serverTemplateId );
 
-    void startContainer(final String serverTemplateId, final String containerSpecId);
+    Collection<Container> getContainers( final String serverInstanceId );
 
-    void stopContainer(final String serverTemplateId, final String containerSpecId);
+    ContainerSpecData getContainers( final ContainerSpecKey containerSpecKey );
 
 }

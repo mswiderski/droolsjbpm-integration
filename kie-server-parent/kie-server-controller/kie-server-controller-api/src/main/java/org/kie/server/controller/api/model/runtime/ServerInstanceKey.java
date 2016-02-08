@@ -17,6 +17,10 @@ package org.kie.server.controller.api.model.runtime;
 
 public interface ServerInstanceKey {
 
+    String getServerTemplateId();
+
+    String getServerName();
+
     String getServerInstanceId();
 
     String getUrl();

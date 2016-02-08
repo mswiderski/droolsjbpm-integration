@@ -15,6 +15,9 @@
 
 package org.kie.server.controller.api.model.spec;
 
+/**
+ * TODO: update me
+ */
 public interface ServerConfig {
 
 }

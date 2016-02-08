@@ -17,12 +17,12 @@ package org.kie.server.controller.api.model.spec;
 
 public interface ProcessConfig extends ContainerConfig {
 
-    String getRuntimeStrategy();
+    RuntimeStrategy getRuntimeStrategy();
 
     String getKBase();
 
     String getKSession();
 
-    String getMergeMode();
+    MergeMode getMergeMode();
 
 }

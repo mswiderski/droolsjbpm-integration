@@ -17,15 +17,13 @@ package org.kie.server.controller.api.model.runtime;
 
 import java.util.Collection;
 
-import org.kie.server.api.model.ReleaseId;
+import org.guvnor.common.services.project.model.GAV;
 
 public interface Container extends ContainerKey {
 
-
-    String getServerInstanceId();
-
     Collection<Message> getMessages();
 
-    ReleaseId getResolvedReleasedId();
+    GAV getResolvedReleasedId();
 
 }
+

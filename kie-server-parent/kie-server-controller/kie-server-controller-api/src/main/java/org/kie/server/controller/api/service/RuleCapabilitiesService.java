@@ -15,16 +15,20 @@
 
 package org.kie.server.controller.api.service;
 
-import org.kie.server.api.model.ReleaseId;
+import org.jboss.errai.bus.server.annotations.Remote;
+import org.kie.server.controller.api.model.spec.ContainerSpecKey;
 
+@Remote
 public interface RuleCapabilitiesService {
 
-    void scanNow(final String serverTemplateId, final String containerSpecId);
+    void scanNow( final ContainerSpecKey containerSpecKey );
 
-    void startScanner(final String serverTemplateId, final String containerSpecId, long interval);
+    void startScanner( final ContainerSpecKey containerSpecKey,
+                       final int interval );
 
-    void stopScanner(final String serverTemplateId, final String containerSpecId);
+    void stopScanner( final ContainerSpecKey containerSpecKey );
 
-    void upgradeContainer(final String serverTemplateId, final String containerSpecId, final ReleaseId releaseId);
+    void versionUpgrade( final ContainerSpecKey containerSpecKey,
+                         final String version );
 
 }
