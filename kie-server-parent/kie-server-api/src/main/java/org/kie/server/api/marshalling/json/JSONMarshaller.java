@@ -94,10 +94,12 @@ public class JSONMarshaller implements Marshaller {
         AnnotationIntrospector introspectorPair = new AnnotationIntrospector.Pair(primary, secondary);
         objectMapper.setDeserializationConfig(objectMapper.getDeserializationConfig()
                 .withAnnotationIntrospector(introspectorPair)
-                .without(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES));
-        objectMapper.setSerializationConfig(objectMapper.getSerializationConfig()
-                .withAnnotationIntrospector(introspectorPair)
-                .with(SerializationConfig.Feature.INDENT_OUTPUT));
+                .without(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES)
+                .with( DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY ));
+        objectMapper.setSerializationConfig(
+                objectMapper.getSerializationConfig()
+                        .withAnnotationIntrospector( introspectorPair )
+                        .with( SerializationConfig.Feature.INDENT_OUTPUT ));
 
         // setup custom serialization mapper with jaxb adapters
         customSerializationMapper.setDeserializationConfig(customSerializationMapper.getDeserializationConfig().withAnnotationIntrospector(introspectorPair));
