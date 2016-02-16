@@ -301,9 +301,14 @@ public class SolverServiceBase {
                 new Runnable() {
                     @Override
                     public void run() {
-                        sic.getSolver().solve( instance.getPlanningProblem() );
-                        synchronized ( sic ) {
-                            sic.getInstance().setStatus( SolverInstance.SolverStatus.NOT_SOLVING );
+                        try {
+                            sic.getSolver().solve( instance.getPlanningProblem() );
+                        } catch( Exception e ) {
+                            logger.error( "Exception executing solver '"+sic.getInstance().getSolverId()+"' from container '"+sic.getInstance().getContainerId()+"'. Thread will terminate.", e );
+                        } finally {
+                            synchronized ( sic ) {
+                                sic.getInstance().setStatus( SolverInstance.SolverStatus.NOT_SOLVING );
+                            }
                         }
                     }
                 } );

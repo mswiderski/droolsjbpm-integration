@@ -76,6 +76,9 @@ public class OptaplannerKieServerExtension
 
     @Override
     public void destroy(KieServerImpl kieServer, KieServerRegistry registry) {
+        if( this.threadPool != null ) {
+            this.threadPool.shutdownNow();
+        }
     }
 
     @Override
