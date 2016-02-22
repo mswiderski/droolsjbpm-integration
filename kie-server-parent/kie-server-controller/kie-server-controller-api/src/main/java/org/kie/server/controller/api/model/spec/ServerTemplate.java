@@ -17,12 +17,10 @@ package org.kie.server.controller.api.model.spec;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -83,7 +81,8 @@ public class ServerTemplate extends ServerTemplateKey {
         if (containersSpec == null) {
             containersSpec = new ArrayList<ContainerSpec>();
         }
-        return Collections.unmodifiableCollection(containersSpec);
+        //Errai doesn't play nice with unmod collection
+        return new ArrayList<ContainerSpec>( containersSpec );
     }
 
     public Collection<ServerInstanceKey> getServerInstanceKeys() {

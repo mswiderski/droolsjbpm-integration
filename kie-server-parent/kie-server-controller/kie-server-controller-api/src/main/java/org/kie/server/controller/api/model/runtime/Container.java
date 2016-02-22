@@ -48,6 +48,7 @@ public class Container extends ContainerKey {
             final ReleaseId resolvedReleasedId,
             final String url ) {
         super( containerSpecId, containerName, serverInstanceKey );
+        this.serverInstanceId = serverInstanceKey.getServerInstanceId();
         this.messages.addAll( messages );
         this.resolvedReleasedId = resolvedReleasedId;
 
@@ -86,6 +87,6 @@ public class Container extends ContainerKey {
     }
 
     public ServerInstanceKey getServerInstanceKey() {
-        return new ServerInstanceKey(serverInstanceId, serverInstanceId, getServerTemplateId(), getUrl());
+        return new ServerInstanceKey(getServerTemplateId(), serverInstanceId, serverInstanceId, getUrl());
     }
 }

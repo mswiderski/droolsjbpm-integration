@@ -36,10 +36,10 @@ public class ServerInstanceKey {
     public ServerInstanceKey() {
     }
 
-    public ServerInstanceKey(String serverInstanceId, String serverName, String serverTemplateId, String url) {
-        this.serverInstanceId = serverInstanceId;
-        this.serverName = serverName;
+    public ServerInstanceKey(String serverTemplateId, String serverName, String serverInstanceId, String url) {
         this.serverTemplateId = serverTemplateId;
+        this.serverName = serverName;
+        this.serverInstanceId = serverInstanceId;
         this.url = url;
     }
 

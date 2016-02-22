@@ -40,6 +40,7 @@ public class ContainerKey {
     public ContainerKey( final String containerSpecId,
             final String containerName,
             final ServerInstanceKey serverInstanceKey ) {
+        this.serverTemplateId = serverInstanceKey.getServerTemplateId();
         this.containerSpecId = containerSpecId;
         this.containerName = containerName;
         this.url = serverInstanceKey.getUrl();
