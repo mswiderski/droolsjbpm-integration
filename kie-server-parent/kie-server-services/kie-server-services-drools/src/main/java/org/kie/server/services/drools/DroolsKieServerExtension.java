@@ -117,6 +117,46 @@ public class DroolsKieServerExtension implements KieServerExtension {
     }
 
     @Override
+    public void updateContainer(String id, KieContainerInstance kieContainerInstance, Map<String, Object> parameters) {
+
+        // do any other bootstrapping rule service requires
+        Set<Class<?>> extraClasses = new HashSet<Class<?>>();
+
+
+        KieModuleMetaData metaData = (KieModuleMetaData) parameters.get(KieServerConstants.KIE_SERVER_PARAM_MODULE_METADATA);
+        Collection<String> packages = metaData.getPackages();
+
+        for (String p : packages) {
+            Collection<String> classes = metaData.getClasses(p);
+
+            for (String c : classes) {
+                String type = p + "." + c;
+                try {
+                    logger.debug("Adding {} type into extra jaxb classes set", type);
+                    Class<?> clazz = Class.forName(type, true, kieContainerInstance.getKieContainer().getClassLoader());
+
+                    addExtraClass(extraClasses, clazz, filterRemoteable);
+                    logger.debug("Added {} type into extra jaxb classes set", type);
+
+                } catch (ClassNotFoundException e) {
+                    logger.warn("Unable to create instance of type {} due to {}", type, e.getMessage());
+                    logger.debug("Complete stack trace for exception while creating type {}", type, e);
+                }  catch (Throwable e) {
+                    logger.warn("Unexpected error while create instance of type {} due to {}", type, e.getMessage());
+                    logger.debug("Complete stack trace for unknown error while creating type {}", type, e);
+                }
+            }
+        }
+
+        kieContainerInstance.addJaxbClasses(extraClasses);
+    }
+
+    @Override
+    public boolean isUpdateContainerAllowed(String id, KieContainerInstance kieContainerInstance, Map<String, Object> parameters) {
+        return true;
+    }
+
+    @Override
     public void disposeContainer(String id, KieContainerInstance kieContainerInstance, Map<String, Object> parameters) {
 
     }
