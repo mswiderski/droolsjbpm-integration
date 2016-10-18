@@ -43,7 +43,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class InMemoryFormProvider extends AbstractFormProvider implements UIFormProvider {
+public class RemoteFormModellerFormProvider extends AbstractFormProvider implements UIFormProvider {
 
     public static final String NODE_FORM = "form";
     public static final String NODE_FIELD = "field";
@@ -58,7 +58,7 @@ public class InMemoryFormProvider extends AbstractFormProvider implements UIForm
     public static final String SUB_FORM_TYPE = "Subform";
     public static final String MULTI_SUB_FORM_TYPE = "MultipleSubform";
 
-    public InMemoryFormProvider() {
+    public RemoteFormModellerFormProvider() {
     }
 
     @Override
