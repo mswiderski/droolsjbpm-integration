@@ -41,20 +41,24 @@ public class UIServicesClientImpl extends AbstractKieServicesClientImpl implemen
         super(config, classLoader);
     }
 
-
     @Override
     public String getProcessForm(String containerId, String processId, String language) {
+        return getProcessFormByType(containerId, processId, language, FORM_MODELLER_TYPE);
+    }
+
+    @Override
+    public String getProcessFormByType(String containerId, String processId, String language, String formType) {
         if( config.isRest() ) {
             Map<String, Object> valuesMap = new HashMap<String, Object>();
             valuesMap.put(RestURI.CONTAINER_ID, containerId);
             valuesMap.put(RestURI.PROCESS_ID, processId);
 
             return makeHttpGetRequestAndCreateRawResponse(
-                    build(loadBalancer.getUrl(), FORM_URI + "/" + PROCESS_FORM_GET_URI, valuesMap) + "?lang=" + language + "&filter=true");
+                    build(loadBalancer.getUrl(), FORM_URI + "/" + PROCESS_FORM_GET_URI, valuesMap) + "?lang=" + language + "&filter=true&type="+formType);
 
         } else {
             CommandScript script = new CommandScript( Collections.singletonList(
-                    (KieServerCommand) new DescriptorCommand( "FormService", "getFormDisplayProcess", new Object[]{containerId, processId, language, true} )) );
+                    (KieServerCommand) new DescriptorCommand( "FormService", "getFormDisplayProcess", new Object[]{containerId, processId, language, true, formType} )) );
             ServiceResponse<String> response = (ServiceResponse<String>) executeJmsCommand( script, DescriptorCommand.class.getName(), "BPM-UI", containerId ).getResponses().get(0);
 
             throwExceptionOnFailure(response);
@@ -67,17 +71,22 @@ public class UIServicesClientImpl extends AbstractKieServicesClientImpl implemen
 
     @Override
     public String getProcessForm(String containerId, String processId) {
+        return getProcessFormByType(containerId, processId, FORM_MODELLER_TYPE);
+    }
+
+    @Override
+    public String getProcessFormByType(String containerId, String processId, String formType) {
         if( config.isRest() ) {
             Map<String, Object> valuesMap = new HashMap<String, Object>();
             valuesMap.put(RestURI.CONTAINER_ID, containerId);
             valuesMap.put(RestURI.PROCESS_ID, processId);
 
             return makeHttpGetRequestAndCreateRawResponse(
-                    build(loadBalancer.getUrl(), FORM_URI + "/" + PROCESS_FORM_GET_URI, valuesMap) + "?filter=false");
+                    build(loadBalancer.getUrl(), FORM_URI + "/" + PROCESS_FORM_GET_URI, valuesMap) + "?filter=false&type="+formType);
 
         } else {
             CommandScript script = new CommandScript( Collections.singletonList(
-                    (KieServerCommand) new DescriptorCommand( "FormService", "getFormDisplayProcess", new Object[]{containerId, processId, "", false} )) );
+                    (KieServerCommand) new DescriptorCommand( "FormService", "getFormDisplayProcess", new Object[]{containerId, processId, "", false, formType} )) );
             ServiceResponse<String> response = (ServiceResponse<String>) executeJmsCommand( script, DescriptorCommand.class.getName(), "BPM-UI", containerId ).getResponses().get(0);
 
             throwExceptionOnFailure(response);
@@ -90,17 +99,22 @@ public class UIServicesClientImpl extends AbstractKieServicesClientImpl implemen
 
     @Override
     public String getTaskForm(String containerId, Long taskId, String language) {
+        return getTaskFormByType(containerId, taskId, language, FORM_MODELLER_TYPE);
+    }
+
+    @Override
+    public String getTaskFormByType(String containerId, Long taskId, String language, String formType) {
         if( config.isRest() ) {
             Map<String, Object> valuesMap = new HashMap<String, Object>();
             valuesMap.put(RestURI.CONTAINER_ID, containerId);
             valuesMap.put(RestURI.TASK_INSTANCE_ID, taskId);
 
             return makeHttpGetRequestAndCreateRawResponse(
-                    build(loadBalancer.getUrl(), FORM_URI + "/" + TASK_FORM_GET_URI, valuesMap) + "?lang=" + language + "&filter=true");
+                    build(loadBalancer.getUrl(), FORM_URI + "/" + TASK_FORM_GET_URI, valuesMap) + "?lang=" + language + "&filter=true&type="+formType);
 
         } else {
             CommandScript script = new CommandScript( Collections.singletonList(
-                    (KieServerCommand) new DescriptorCommand( "FormService", "getFormDisplayTask", new Object[]{taskId, language, true} )) );
+                    (KieServerCommand) new DescriptorCommand( "FormService", "getFormDisplayTask", new Object[]{taskId, language, true, formType} )) );
             ServiceResponse<String> response = (ServiceResponse<String>) executeJmsCommand( script, DescriptorCommand.class.getName(), "BPM-UI", containerId ).getResponses().get(0);
 
             throwExceptionOnFailure(response);
@@ -113,17 +127,22 @@ public class UIServicesClientImpl extends AbstractKieServicesClientImpl implemen
 
     @Override
     public String getTaskForm(String containerId, Long taskId) {
+        return getTaskFormByType(containerId, taskId, FORM_MODELLER_TYPE);
+    }
+
+    @Override
+    public String getTaskFormByType(String containerId, Long taskId, String formType) {
         if( config.isRest() ) {
             Map<String, Object> valuesMap = new HashMap<String, Object>();
             valuesMap.put(RestURI.CONTAINER_ID, containerId);
             valuesMap.put(RestURI.TASK_INSTANCE_ID, taskId);
 
             return makeHttpGetRequestAndCreateRawResponse(
-                    build(loadBalancer.getUrl(), FORM_URI + "/" + TASK_FORM_GET_URI, valuesMap) + "?filter=false");
+                    build(loadBalancer.getUrl(), FORM_URI + "/" + TASK_FORM_GET_URI, valuesMap) + "?filter=false&type="+formType);
 
         } else {
             CommandScript script = new CommandScript( Collections.singletonList(
-                    (KieServerCommand) new DescriptorCommand( "FormService", "getFormDisplayTask", new Object[]{taskId, "", false} )) );
+                    (KieServerCommand) new DescriptorCommand( "FormService", "getFormDisplayTask", new Object[]{taskId, "", false, formType} )) );
             ServiceResponse<String> response = (ServiceResponse<String>) executeJmsCommand( script, DescriptorCommand.class.getName(), "BPM-UI", containerId ).getResponses().get(0);
 
             throwExceptionOnFailure(response);

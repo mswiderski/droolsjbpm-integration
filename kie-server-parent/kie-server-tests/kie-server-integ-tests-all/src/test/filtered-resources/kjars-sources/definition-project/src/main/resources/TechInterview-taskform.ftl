@@ -1,4 +1,4 @@
-<script type='text/javascript'>
+<script type='text/javascript'> <![CDATA[
 	function notEmpty(elem){
 		if(elem.value.length == 0){
 			return false;
@@ -62,25 +62,26 @@
 							myInputs[j].focus();
 							return false;
 						}
-			
+
 					j++;
 						if(notEmpty(myInputs[j]) && !isNumeric(myInputs[j])) {
 							alert("Please enter valid out_score");
 							myInputs[j].focus();
 							return false;
 						}
-			
+
 					j++;
 						if(notEmpty(myInputs[j]) && !isAlphanumeric(myInputs[j])) {
 							alert("Please enter valid out_twitter");
 							myInputs[j].focus();
 							return false;
 						}
-			
+
 					j++;
 
 		return true;
 	}
+]]>
 </script>
 <style type="text/css">
 	#container

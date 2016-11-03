@@ -32,6 +32,7 @@ import org.jbpm.kie.services.impl.form.provider.AbstractFormProvider;
 import org.jbpm.kie.services.impl.model.ProcessAssetDesc;
 import org.jbpm.services.api.model.ProcessDefinition;
 import org.kie.api.task.model.Task;
+import org.kie.server.services.jbpm.ui.FormServiceBase;
 import org.kie.server.services.jbpm.ui.api.UIFormProvider;
 
 public class RemoteKieFormsProvider extends AbstractFormProvider implements UIFormProvider {
@@ -54,6 +55,11 @@ public class RemoteKieFormsProvider extends AbstractFormProvider implements UIFo
     @Override
     public int getPriority() {
         return 0;
+    }
+
+    @Override
+    public String getType() {
+        return FormServiceBase.FormType.FORM_TYPE.getName();
     }
 
     @Override
@@ -89,7 +95,7 @@ public class RemoteKieFormsProvider extends AbstractFormProvider implements UIFo
     }
 
     protected String generateRenderingContextString( String formContent, Map<String, String> availableForms ) {
-        Map<String, String> contextForms = new HashMap<>();
+        Map<String, Object> contextForms = new HashMap<>();
 
         Collection<String> result = availableForms.entrySet().stream().filter( entry -> entry.getKey().endsWith( getFormExtension() ) ).collect( Collectors.toMap( p -> p.getKey(), p -> p.getValue()) ).values();
 
@@ -99,11 +105,11 @@ public class RemoteKieFormsProvider extends AbstractFormProvider implements UIFo
     }
 
 
-    protected void parseFormContent( JsonObject jsonForm, Map<String, String> contextForms, Collection<String> availableForms ) {
+    protected void parseFormContent( JsonObject jsonForm, Map<String, Object> contextForms, Collection<String> availableForms ) {
         String id = jsonForm.get( "id" ).getAsString();
 
         if ( !contextForms.containsKey( id ) ) {
-            contextForms.put( id, gson.toJson( jsonForm ) );
+            contextForms.put( id,  jsonForm );
         }
 
         JsonArray fields = jsonForm.get( "fields" ).getAsJsonArray();
@@ -125,7 +131,7 @@ public class RemoteKieFormsProvider extends AbstractFormProvider implements UIFo
         } );
     }
 
-    protected void parseFormContent( String formId, Map<String, String> contextForms, Collection<String> availableForms ) {
+    protected void parseFormContent( String formId, Map<String, Object> contextForms, Collection<String> availableForms ) {
         if ( !StringUtils.isEmpty( formId ) && !contextForms.containsKey( formId )) {
             JsonObject jsonForm = findForm( formId, availableForms );
             if ( jsonForm != null ) {

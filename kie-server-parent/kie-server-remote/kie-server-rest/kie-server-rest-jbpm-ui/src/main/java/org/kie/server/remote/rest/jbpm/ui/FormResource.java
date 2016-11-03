@@ -70,18 +70,24 @@ public class FormResource {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getProcessForm(@javax.ws.rs.core.Context HttpHeaders headers,
             @PathParam(CONTAINER_ID) String containerId, @PathParam(PROCESS_ID) String processId,
-            @QueryParam("lang") @DefaultValue("en") String language, @QueryParam("filter") boolean filter) {
+            @QueryParam("lang") @DefaultValue("en") String language, @QueryParam("filter") boolean filter,
+            @QueryParam("type") @DefaultValue("FORM") String formType) {
         Variant v = getVariant(headers);
         Header conversationIdHeader = buildConversationIdHeader(containerId, context, headers);
         try {
 
-            String response = formServiceBase.getFormDisplayProcess(containerId, processId, language, filter);
+            String response = formServiceBase.getFormDisplayProcess(containerId, processId, language, filter, formType);
             if (response != null && !response.isEmpty()) {
 
-                if (v.getMediaType().equals(MediaType.APPLICATION_JSON_TYPE)) {
+                FormServiceBase.FormType actualFormType = FormServiceBase.FormType.fromName(formType);
+
+                if (v.getMediaType().equals(MediaType.APPLICATION_JSON_TYPE) && !actualFormType.getContentType().equals(MediaType.APPLICATION_JSON_TYPE.getSubtype())) {
                     JSONObject json = XML.toJSONObject(response);
                     formatJSONResponse(json);
                     response = json.toString(PRETTY_PRINT_INDENT_FACTOR);
+                } else if (v.getMediaType().equals(MediaType.APPLICATION_XML_TYPE) && !actualFormType.getContentType().equals(MediaType.APPLICATION_XML_TYPE.getSubtype())) {
+                    Object json = parseToJSON(response);
+                    response = XML.toString(json);
                 }
             }
 
@@ -101,16 +107,23 @@ public class FormResource {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getTaskForm(@javax.ws.rs.core.Context HttpHeaders headers,
             @PathParam(CONTAINER_ID) String containerId, @PathParam(TASK_INSTANCE_ID) Long taskId,
-            @QueryParam("lang") @DefaultValue("en") String language, @QueryParam("filter") boolean filter) {
+            @QueryParam("lang") @DefaultValue("en") String language, @QueryParam("filter") boolean filter,
+            @QueryParam("type") @DefaultValue("FORM") String formType) {
         Variant v = getVariant(headers);
         Header conversationIdHeader = buildConversationIdHeader(containerId, context, headers);
         try {
 
-            String response = formServiceBase.getFormDisplayTask(taskId, language, filter);
-            if (v.getMediaType().equals(MediaType.APPLICATION_JSON_TYPE)) {
+            String response = formServiceBase.getFormDisplayTask(taskId, language, filter, formType);
+
+            FormServiceBase.FormType actualFormType = FormServiceBase.FormType.fromName(formType);
+
+            if (v.getMediaType().equals(MediaType.APPLICATION_JSON_TYPE) && !actualFormType.getContentType().equals(MediaType.APPLICATION_JSON_TYPE.getSubtype())) {
                 JSONObject json = XML.toJSONObject(response);
                 formatJSONResponse(json);
                 response = json.toString(PRETTY_PRINT_INDENT_FACTOR);
+            } else if (v.getMediaType().equals(MediaType.APPLICATION_XML_TYPE) && !actualFormType.getContentType().equals(MediaType.APPLICATION_XML_TYPE.getSubtype())) {
+                Object json = parseToJSON(response);
+                response = XML.toString(json);
             }
 
             logger.debug("Returning OK response with content '{}'", response);
@@ -138,7 +151,7 @@ public class FormResource {
                 putPropertyArrayToObject((JSONObject)fields);
             }
         } catch (JSONException e) {
-            e.printStackTrace();
+            logger.debug("exception while formatting :: {}", e.getMessage(), e);
         }
     }
 
@@ -151,4 +164,11 @@ public class FormResource {
         obj.remove("property");
     }
 
+    private Object parseToJSON(String content) throws JSONException{
+        try {
+            return new JSONArray(content);
+        } catch (JSONException e) {
+            return new JSONObject(content);
+        }
+    }
 }

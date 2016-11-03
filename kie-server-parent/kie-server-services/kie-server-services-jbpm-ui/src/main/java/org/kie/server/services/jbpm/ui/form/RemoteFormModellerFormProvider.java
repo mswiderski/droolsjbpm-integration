@@ -38,6 +38,7 @@ import org.jbpm.kie.services.impl.form.provider.AbstractFormProvider;
 import org.jbpm.kie.services.impl.model.ProcessAssetDesc;
 import org.jbpm.services.api.model.ProcessDefinition;
 import org.kie.api.task.model.Task;
+import org.kie.server.services.jbpm.ui.FormServiceBase;
 import org.kie.server.services.jbpm.ui.api.UIFormProvider;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -385,5 +386,10 @@ public class RemoteFormModellerFormProvider extends AbstractFormProvider impleme
         }
 
         return null;
+    }
+
+    @Override
+    public String getType() {
+        return FormServiceBase.FormType.FORM_MODELLER_TYPE.getName();
     }
 }

@@ -18,6 +18,7 @@ package org.kie.server.services.jbpm.ui.form;
 
 import org.jbpm.kie.services.impl.FormManagerService;
 import org.jbpm.kie.services.impl.form.provider.InMemoryFormProvider;
+import org.kie.server.services.jbpm.ui.FormServiceBase;
 import org.kie.server.services.jbpm.ui.api.UIFormProvider;
 
 public class RemoteClassPathFormProvider extends InMemoryFormProvider implements UIFormProvider {
@@ -25,5 +26,10 @@ public class RemoteClassPathFormProvider extends InMemoryFormProvider implements
     @Override
     public void configure( FormManagerService formManagerService ) {
         setFormManagerService( formManagerService );
+    }
+
+    @Override
+    public String getType() {
+        return FormServiceBase.FormType.FREE_MARKER_TYPE.getName();
     }
 }
