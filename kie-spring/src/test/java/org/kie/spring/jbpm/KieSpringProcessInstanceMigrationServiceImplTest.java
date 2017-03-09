@@ -17,25 +17,26 @@ package org.kie.spring.jbpm;
 
 import java.util.Arrays;
 import java.util.Collection;
-
 import javax.persistence.EntityManagerFactory;
 
-import org.jbpm.kie.services.impl.admin.ProcessInstanceMigrationServiceImpl;
+import org.jbpm.process.audit.ProcessInstanceLog;
 import org.jbpm.runtime.manager.impl.deploy.DeploymentDescriptorImpl;
 import org.jbpm.runtime.manager.impl.jpa.EntityManagerFactoryManager;
-import org.jbpm.services.api.admin.MigrationReport;
+import org.jbpm.runtime.manager.impl.migration.MigrationException;
+import org.jbpm.runtime.manager.impl.migration.MigrationManager;
+import org.jbpm.runtime.manager.impl.migration.MigrationSpec;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.kie.api.runtime.manager.Context;
+import org.kie.api.runtime.manager.RuntimeEngine;
 import org.kie.api.runtime.manager.RuntimeManager;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.internal.runtime.manager.InternalRuntimeManager;
 import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @RunWith(Parameterized.class)
 public class KieSpringProcessInstanceMigrationServiceImplTest extends AbstractJbpmSpringParameterizedTest {
@@ -53,6 +54,7 @@ public class KieSpringProcessInstanceMigrationServiceImplTest extends AbstractJb
 
     @After
     public void cleanup() {
+        System.clearProperty("org.kie.txm.factory.class");
         EntityManagerFactoryManager.get().clear();
     }
 
@@ -64,9 +66,8 @@ public class KieSpringProcessInstanceMigrationServiceImplTest extends AbstractJb
 
     @Test
     public void testMigrateSingleProcessInstance() {
-
-        System.setProperty("org.kie.txm.factory.clas",
-                           "org.kie.spring.persistence.KieSpringTransactionManagerFactory");
+        System.setProperty("org.kie.txm.factory.class", "org.kie.spring.persistence.KieSpringTransactionManagerFactory");
+        EntityManagerFactoryManager.get().addEntityManagerFactory("org.jbpm.persistence.spring.jta", context.getBean("jbpmEMF", EntityManagerFactory.class));
 
         RuntimeManager firstManager = getManager();
 
@@ -74,9 +75,6 @@ public class KieSpringProcessInstanceMigrationServiceImplTest extends AbstractJb
                 getDeploymentDescriptor()).setAuditPersistenceUnit("org.jbpm.persistence.spring.jta");
         ((DeploymentDescriptorImpl) ((InternalRuntimeManager) firstManager).
                 getDeploymentDescriptor()).setPersistenceUnit("org.jbpm.persistence.spring.jta");
-        EntityManagerFactoryManager.get().addEntityManagerFactory("org.jbpm.persistence.spring.jta",
-                                                                  context.getBean("jbpmEMF",
-                                                                                  EntityManagerFactory.class));
 
         assertNotNull(firstManager);
 
@@ -85,28 +83,40 @@ public class KieSpringProcessInstanceMigrationServiceImplTest extends AbstractJb
                 getDeploymentDescriptor()).setAuditPersistenceUnit("org.jbpm.persistence.spring.jta");
         ((DeploymentDescriptorImpl) ((InternalRuntimeManager) secondManager).
                 getDeploymentDescriptor()).setPersistenceUnit("org.jbpm.persistence.spring.jta");
-        EntityManagerFactoryManager.get().addEntityManagerFactory("org.jbpm.persistence.spring.jta",
-                                                                  context.getBean("jbpmEMF",
-                                                                                  EntityManagerFactory.class));
+
 
         assertNotNull(secondManager);
 
-        ProcessInstance instance = firstManager.getRuntimeEngine(runtimeManagerContext).getKieSession().startProcess(ADDTASKAFTERACTIVE_ID_V1);
+        RuntimeEngine engine = firstManager.getRuntimeEngine(runtimeManagerContext);
+
+        ProcessInstance instance = engine.getKieSession().startProcess(ADDTASKAFTERACTIVE_ID_V1);
         assertNotNull(instance);
 
         long processInstanceId = instance.getId();
         assertNotNull(processInstanceId);
 
-        assertNotNull(processInstanceId);
+        org.kie.api.runtime.manager.audit.ProcessInstanceLog log = engine.getAuditService().findProcessInstance(processInstanceId);
+        assertEquals(ProcessInstance.STATE_ACTIVE, log.getStatus().intValue());
+        assertEquals(ADDTASKAFTERACTIVE_ID_V1, log.getProcessId());
 
-        ProcessInstanceMigrationServiceImpl migrationService = new ProcessInstanceMigrationServiceImpl();
+        MigrationSpec migrationSpec = new MigrationSpec(firstManager.getIdentifier(), processInstanceId, secondManager.getIdentifier(), ADDTASKAFTERACTIVE_ID_V2);
+        MigrationManager migrationManager = new MigrationManager(migrationSpec);
 
-        MigrationReport report = migrationService.migrate(firstManager.getIdentifier(),
-                                                          processInstanceId,
-                                                          secondManager.getIdentifier(),
-                                                          ADDTASKAFTERACTIVE_ID_V2);
+        org.jbpm.runtime.manager.impl.migration.MigrationReport report = null;
+        try {
+            report = migrationManager.migrate();
+
+        } catch (MigrationException e) {
+            report = e.getReport();
+        }
 
         assertNotNull(report);
         assertTrue(report.isSuccessful());
+
+        log = engine.getAuditService().findProcessInstance(processInstanceId);
+        assertEquals(ProcessInstance.STATE_ACTIVE, log.getStatus().intValue());
+        assertEquals(ADDTASKAFTERACTIVE_ID_V2, log.getProcessId());
+
+        firstManager.disposeRuntimeEngine(engine);
     }
 }
