@@ -221,6 +221,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-kie-services</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.drools</groupId>
       <artifactId>named-kiesession</artifactId>
       <scope>test</scope>
