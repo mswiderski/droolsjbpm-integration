@@ -13,7 +13,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>batik</groupId>
+      <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-svg-dom</artifactId>
       <exclusions>
         <exclusion>
@@ -23,7 +23,7 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>batik</groupId>
+      <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-util</artifactId>
     </dependency>
 
